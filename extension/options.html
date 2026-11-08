@@ -1,0 +1,9 @@
+<!doctype html><meta charset="utf-8"><title>Pawload options</title>
+<style>body{font:14px system-ui;max-width:520px;margin:30px auto}input[type=text],input[type=number]{width:100%;padding:6px;margin:4px 0 12px;box-sizing:border-box}</style>
+<h2>🐾 Pawload options</h2>
+<p>Run <code>pawload token</code> in a terminal and paste the values below.</p>
+<label>Port<input id="port" type="number" value="9614"></label>
+<label>Token<input id="token" type="text" autocomplete="off"></label>
+<label><input id="intercept" type="checkbox"> Capture normal browser downloads (IDM-style). Falls back to the browser if Pawload isn't running.</label><br><br>
+<button id="save">Save</button> <span id="ok"></span>
+<script src="options.js"></script>

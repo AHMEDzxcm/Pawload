@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "Pawload",
+  "version": "0.1.0",
+  "description": "Download videos, audio and files with your local Pawload service.",
+  "permissions": ["storage", "contextMenus", "downloads"],
+  "host_permissions": ["http://127.0.0.1/*", "http://localhost/*"],
+  "background": { "service_worker": "background.js" },
+  "content_scripts": [
+    { "matches": ["http://*/*", "https://*/*"], "js": ["content.js"], "run_at": "document_idle" }
+  ],
+  "action": { "default_popup": "popup.html", "default_title": "Pawload" },
+  "options_ui": { "page": "options.html", "open_in_tab": true },
+  "icons": { "16": "icons/16.png", "48": "icons/48.png", "128": "icons/128.png" }
+}
