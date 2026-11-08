@@ -133,3 +133,14 @@ def test_api_end_to_end(api, origin, tmp_path):
         time.sleep(0.1)
     assert d["status"] == "done", d
     assert call(api, f"/api/downloads/{job['id']}", "DELETE")[0] == 200
+
+
+def test_find_ffmpeg_next_to_executable(tmp_path, monkeypatch):
+    import sys
+    from palwoad import media
+    name = "ffmpeg.exe" if sys.platform == "win32" else "ffmpeg"
+    (tmp_path / name).write_bytes(b"")
+    monkeypatch.setattr(sys, "executable", str(tmp_path / "Palwoad.exe"))
+    monkeypatch.setenv("PATH", "")
+    assert media.find_ffmpeg() == str(tmp_path / name)
+    assert media.has_ffmpeg()

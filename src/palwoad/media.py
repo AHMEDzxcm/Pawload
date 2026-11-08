@@ -1,5 +1,6 @@
 """Video/audio extraction for YouTube and the ~1800 other sites yt-dlp supports."""
 import shutil
+import sys
 import threading
 from pathlib import Path
 from typing import Callable, Optional
@@ -9,14 +10,30 @@ from .segmented import Cancelled
 AUDIO_CODECS = ("mp3", "m4a", "opus", "flac", "wav")
 
 
+def find_ffmpeg() -> Optional[str]:
+    """Locate ffmpeg: next to Palwoad.exe (bundled build) first, then PATH."""
+    name = "ffmpeg.exe" if sys.platform == "win32" else "ffmpeg"
+    dirs = [Path(sys.executable).resolve().parent]
+    if getattr(sys, "_MEIPASS", None):
+        dirs.append(Path(sys._MEIPASS))
+    for d in dirs:
+        cand = d / name
+        if cand.is_file():
+            return str(cand)
+    return shutil.which("ffmpeg")
+
+
 def _ydl(opts):
     import yt_dlp
     base = {"quiet": True, "no_warnings": True, "noplaylist": True}
+    ff = find_ffmpeg()
+    if ff:
+        base["ffmpeg_location"] = ff
     return yt_dlp.YoutubeDL({**base, **opts})
 
 
 def has_ffmpeg() -> bool:
-    return shutil.which("ffmpeg") is not None
+    return find_ffmpeg() is not None
 
 
 def probe(url: str) -> dict:
