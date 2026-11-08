@@ -10,7 +10,7 @@ import urllib.request
 from pathlib import Path
 from typing import Callable, Dict, Optional
 
-UA = "Mozilla/5.0 (compatible; Pawload/0.1)"
+UA = "Mozilla/5.0 (compatible; Palwoad/0.1)"
 BLOCK = 256 * 1024
 
 
@@ -55,7 +55,7 @@ def probe(url: str, headers: Optional[Dict[str, str]] = None):
 def unique_path(directory: Path, name: str) -> Path:
     p = directory / name
     stem, suffix, i = p.stem, p.suffix, 1
-    while p.exists() or Path(str(p) + ".pawload").exists():
+    while p.exists() or Path(str(p) + ".palwoad").exists():
         p = directory / f"{stem} ({i}){suffix}"
         i += 1
     return p
@@ -140,7 +140,7 @@ class Segmented:
         self._done = sum(p[2] - p[0] for p in parts)
         self.on_progress(self._done, size)
 
-        sidecar = Path(str(self.path) + ".pawload")
+        sidecar = Path(str(self.path) + ".palwoad")
         stop_saver = threading.Event()
 
         def save():
@@ -205,7 +205,7 @@ class Segmented:
         if not size:
             return None
         target = self.dest_dir / name
-        sidecar = Path(str(target) + ".pawload")
+        sidecar = Path(str(target) + ".palwoad")
         if target.exists() and sidecar.exists():
             try:
                 s = json.loads(sidecar.read_text())

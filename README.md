@@ -1,4 +1,4 @@
-# 🐾 Pawload
+# 🐾 Palwoad
 
 A free, open-source download manager. Fast multi-connection downloads for any file, one-click video/audio
 grabbing from YouTube and ~1800 other sites (via [yt-dlp](https://github.com/yt-dlp/yt-dlp)), and a browser
@@ -9,10 +9,10 @@ MIT licensed · no telemetry · no accounts · nothing leaves your machine excep
 ## How it works
 
 ```
-Browser extension ──(token-authenticated, 127.0.0.1 only)──▶ pawload service ──▶ yt-dlp / segmented downloader ──▶ your disk
+Browser extension ──(token-authenticated, 127.0.0.1 only)──▶ palwoad service ──▶ yt-dlp / segmented downloader ──▶ your disk
 ```
 
-- **`src/pawload`** – the Python service and CLI. Direct links use a resumable segmented downloader
+- **`src/palwoad`** – the Python service and CLI. Direct links use a resumable segmented downloader
   (up to 8 parallel connections); video pages go through yt-dlp; ffmpeg handles merging and audio extraction.
 - **`extension/`** – Manifest V3 extension (Chrome, Edge, Brave, Chromium). Hover a video → **⬇ Download** pill →
   pick Best / 1080p / 720p… or MP3 / M4A / Opus. Also: toolbar popup with live progress, right-click menu,
@@ -23,10 +23,10 @@ Browser extension ──(token-authenticated, 127.0.0.1 only)──▶ pawload s
 Requires Python 3.9+. [ffmpeg](https://ffmpeg.org/) is recommended (needed for 1080p+ merging and audio extraction).
 
 ```bash
-git clone https://github.com/ahmedzxcm/pawload && cd pawload
+git clone https://github.com/ahmedzxcm/Pawload && cd Pawload
 pip install .
-pawload serve          # keep this running (or add it to your startup items)
-pawload token          # shows the port + pairing token
+palwoad serve          # keep this running (or add it to your startup items)
+palwoad token          # shows the port + pairing token
 ```
 
 Load the extension: open `chrome://extensions` → enable *Developer mode* → *Load unpacked* → select `extension/`.
@@ -35,14 +35,14 @@ Open its **Options**, paste the token, save. Done.
 ### CLI
 
 ```bash
-pawload get https://example.com/big.iso            # segmented file download
-pawload get https://www.youtube.com/watch?v=...    # best video+audio
-pawload get URL --height 720
-pawload get URL --audio mp3
-pawload set download_dir ~/Videos
+palwoad get https://example.com/big.iso            # segmented file download
+palwoad get https://www.youtube.com/watch?v=...    # best video+audio
+palwoad get URL --height 720
+palwoad get URL --audio mp3
+palwoad set download_dir ~/Videos
 ```
 
-Files land in `~/Downloads/Pawload` by default.
+Files land in `~/Downloads/Palwoad` by default.
 
 ## Security model
 
@@ -64,7 +64,7 @@ packaged installers with autostart, pause/resume in UI, scheduler, speed limit, 
 
 ## Legal
 
-Pawload is a tool; you are responsible for what you download. Respect copyright and site terms of service.
+Palwoad is a tool; you are responsible for what you download. Respect copyright and site terms of service.
 
 ## Contributing
 

@@ -7,7 +7,7 @@ from pathlib import Path
 
 DEFAULTS = {
     "port": 9614,
-    "download_dir": str(Path.home() / "Downloads" / "Pawload"),
+    "download_dir": str(Path.home() / "Downloads" / "Palwoad"),
     "connections": 8,
     "max_concurrent": 3,
 }
@@ -20,7 +20,7 @@ def config_dir() -> Path:
         base = Path.home() / "Library" / "Application Support"
     else:
         base = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config"))
-    return Path(os.environ.get("PAWLOAD_HOME", base / "pawload"))
+    return Path(os.environ.get("PALWOAD_HOME", base / "palwoad"))
 
 
 def load() -> dict:

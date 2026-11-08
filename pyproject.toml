@@ -3,7 +3,7 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "pawload"
+name = "palwoad"
 version = "0.1.0"
 description = "Open-source download manager: fast segmented downloads, video/audio grabbing, browser integration."
 readme = "README.md"
@@ -15,7 +15,7 @@ dependencies = ["yt-dlp"]
 dev = ["pytest"]
 
 [project.scripts]
-pawload = "pawload.cli:main"
+palwoad = "palwoad.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

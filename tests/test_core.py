@@ -10,9 +10,9 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import pytest
 
-from pawload.manager import Manager
-from pawload.segmented import Cancelled, Segmented, sanitize_filename
-from pawload.server import make_server
+from palwoad.manager import Manager
+from palwoad.segmented import Cancelled, Segmented, sanitize_filename
+from palwoad.server import make_server
 
 DATA = os.urandom(5 * 1024 * 1024 + 123)
 
@@ -64,7 +64,7 @@ def test_segmented_download_matches(origin, tmp_path):
     p = Segmented(origin(FileHandler), tmp_path, connections=4).run()
     assert sha(p) == hashlib.sha256(DATA).hexdigest()
     assert p.name == "evil name.bin"  # path traversal stripped
-    assert not list(tmp_path.glob("*.pawload"))
+    assert not list(tmp_path.glob("*.palwoad"))
 
 
 def test_fallback_without_ranges(origin, tmp_path):
@@ -101,7 +101,7 @@ def socket_free_port():
 
 
 def call(cfg, path, method="GET", body=None, token="secret", host=None):
-    h = {"X-Pawload-Token": token}
+    h = {"X-Palwoad-Token": token}
     if host: h["Host"] = host
     r = urllib.request.Request(f"http://127.0.0.1:{cfg['port']}{path}", method=method, headers=h,
                                data=json.dumps(body).encode() if body is not None else None)

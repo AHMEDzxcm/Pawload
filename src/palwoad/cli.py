@@ -12,13 +12,13 @@ from .server import make_server
 def _api(cfg, method, path, body=None):
     req = urllib.request.Request(f"http://127.0.0.1:{cfg['port']}{path}", method=method,
                                  data=json.dumps(body).encode() if body is not None else None,
-                                 headers={"X-Pawload-Token": cfg["token"], "Content-Type": "application/json"})
+                                 headers={"X-Palwoad-Token": cfg["token"], "Content-Type": "application/json"})
     with urllib.request.urlopen(req, timeout=60) as r:
         return json.load(r)
 
 
 def main(argv=None):
-    p = argparse.ArgumentParser(prog="pawload", description="Pawload download manager")
+    p = argparse.ArgumentParser(prog="palwoad", description="Palwoad download manager")
     p.add_argument("--version", action="version", version=__version__)
     sub = p.add_subparsers(dest="cmd")
     sub.add_parser("serve", help="run the local service the browser extension talks to")
@@ -28,7 +28,7 @@ def main(argv=None):
     g.add_argument("--audio", metavar="CODEC", help="extract audio (mp3, m4a, opus, flac, wav)")
     g.add_argument("--height", type=int, help="max video height, e.g. 1080")
     g.add_argument("--file", action="store_true", help="treat as a direct file link, not a video page")
-    s = sub.add_parser("set", help="change a setting, e.g. pawload set download_dir ~/Videos")
+    s = sub.add_parser("set", help="change a setting, e.g. palwoad set download_dir ~/Videos")
     s.add_argument("key", choices=["download_dir", "port", "connections", "max_concurrent"])
     s.add_argument("value")
     a = p.parse_args(argv)
@@ -45,7 +45,7 @@ def main(argv=None):
     elif a.cmd == "serve":
         mgr = Manager(cfg)
         srv = make_server(cfg, mgr)
-        print(f"Pawload {__version__} listening on 127.0.0.1:{cfg['port']}\nSaving to {mgr.dest}\n"
+        print(f"Palwoad {__version__} listening on 127.0.0.1:{cfg['port']}\nSaving to {mgr.dest}\n"
               f"Extension pairing  ->  port: {cfg['port']}   token: {cfg['token']}")
         try:
             srv.serve_forever()

@@ -1,4 +1,4 @@
-// All traffic to the local Pawload service goes through here, so web pages never see the token.
+// All traffic to the local Palwoad service goes through here, so web pages never see the token.
 async function cfg() {
   const { port = 9614, token = "", intercept = false } = await chrome.storage.local.get(["port", "token", "intercept"]);
   return { port, token, intercept };
@@ -6,16 +6,16 @@ async function cfg() {
 
 async function api(path, method = "GET", body) {
   const { port, token } = await cfg();
-  if (!token) throw new Error("Not paired yet: run `pawload token` and paste the token in Pawload options.");
+  if (!token) throw new Error("Not paired yet: run `palwoad token` and paste the token in Palwoad options.");
   let res;
   try {
     res = await fetch(`http://127.0.0.1:${port}${path}`, {
       method,
-      headers: { "X-Pawload-Token": token, "Content-Type": "application/json" },
+      headers: { "X-Palwoad-Token": token, "Content-Type": "application/json" },
       body: body ? JSON.stringify(body) : undefined,
     });
   } catch {
-    throw new Error("Can't reach Pawload. Is `pawload serve` running?");
+    throw new Error("Can't reach Palwoad. Is `palwoad serve` running?");
   }
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
@@ -38,8 +38,8 @@ chrome.runtime.onMessage.addListener((msg, sender, reply) => {
 });
 
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.contextMenus.create({ id: "pl-link", title: "Download link with Pawload", contexts: ["link", "video", "audio"] });
-  chrome.contextMenus.create({ id: "pl-page", title: "Download this page's video with Pawload", contexts: ["page"] });
+  chrome.contextMenus.create({ id: "pl-link", title: "Download link with Palwoad", contexts: ["link", "video", "audio"] });
+  chrome.contextMenus.create({ id: "pl-page", title: "Download this page's video with Palwoad", contexts: ["page"] });
 });
 
 chrome.contextMenus.onClicked.addListener(async (info) => {
@@ -48,7 +48,7 @@ chrome.contextMenus.onClicked.addListener(async (info) => {
     if (info.menuItemId === "pl-page") await api("/api/downloads", "POST", { url: info.pageUrl, kind: "video" });
     else if (url) await api("/api/downloads", "POST", { url, kind: "file" });
   } catch (e) {
-    console.warn("Pawload:", e.message);
+    console.warn("Palwoad:", e.message);
   }
 });
 

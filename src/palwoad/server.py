@@ -20,7 +20,7 @@ def make_server(cfg: dict, manager: Manager) -> ThreadingHTTPServer:
     token = cfg["token"]
 
     class Handler(BaseHTTPRequestHandler):
-        server_version = "Pawload/" + __version__
+        server_version = "Palwoad/" + __version__
 
         def log_message(self, *a):  # quiet
             pass
@@ -40,7 +40,7 @@ def make_server(cfg: dict, manager: Manager) -> ThreadingHTTPServer:
                 self._send(403, {"error": "bad host"})
                 return False
             if need_auth:
-                given = self.headers.get("X-Pawload-Token", "")
+                given = self.headers.get("X-Palwoad-Token", "")
                 if not hmac.compare_digest(given.encode(), token.encode()):
                     self._send(401, {"error": "invalid token"})
                     return False
@@ -58,7 +58,7 @@ def make_server(cfg: dict, manager: Manager) -> ThreadingHTTPServer:
                 return
             try:
                 if method == "GET" and path == "/api/ping":
-                    return self._send(200, {"app": "pawload", "version": __version__})
+                    return self._send(200, {"app": "palwoad", "version": __version__})
                 if method == "GET" and path == "/api/downloads":
                     return self._send(200, {"downloads": manager.list(), "ffmpeg": media.has_ffmpeg()})
                 if method == "POST" and path == "/api/probe":

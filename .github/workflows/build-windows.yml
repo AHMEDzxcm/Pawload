@@ -12,7 +12,7 @@ jobs:
         with: { python-version: "3.12" }
       - run: pip install . pyinstaller pytest
       - run: python -m pytest -q tests
-      - run: pyinstaller --onefile --name Pawload --collect-all yt_dlp src/pawload/cli.py
+      - run: pyinstaller --onefile --name Palwoad --paths src --collect-all yt_dlp packaging/launcher.py
       - name: Fetch ffmpeg
         shell: pwsh
         run: |
@@ -22,8 +22,8 @@ jobs:
       - name: Assemble package
         shell: pwsh
         run: |
-          New-Item -ItemType Directory Pawload-Windows
-          Copy-Item dist/Pawload.exe, dist/ffmpeg.exe, README.md, LICENSE Pawload-Windows/
-          Copy-Item extension Pawload-Windows/extension -Recurse
+          New-Item -ItemType Directory Palwoad-Windows
+          Copy-Item dist/Palwoad.exe, dist/ffmpeg.exe, README.md, LICENSE Palwoad-Windows/
+          Copy-Item extension Palwoad-Windows/extension -Recurse
       - uses: actions/upload-artifact@v4
-        with: { name: Pawload-Windows, path: Pawload-Windows }
+        with: { name: Palwoad-Windows, path: Palwoad-Windows }
