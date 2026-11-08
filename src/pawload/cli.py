@@ -20,7 +20,7 @@ def _api(cfg, method, path, body=None):
 def main(argv=None):
     p = argparse.ArgumentParser(prog="pawload", description="Pawload download manager")
     p.add_argument("--version", action="version", version=__version__)
-    sub = p.add_subparsers(dest="cmd", required=True)
+    sub = p.add_subparsers(dest="cmd")
     sub.add_parser("serve", help="run the local service the browser extension talks to")
     sub.add_parser("token", help="print the pairing token and port for the extension")
     g = sub.add_parser("get", help="download a URL (starts a one-off service if none is running)")
@@ -32,6 +32,8 @@ def main(argv=None):
     s.add_argument("key", choices=["download_dir", "port", "connections", "max_concurrent"])
     s.add_argument("value")
     a = p.parse_args(argv)
+    if a.cmd is None:  # double-clicked the .exe: just run the service
+        a.cmd = "serve"
 
     cfg = config.load()
     if a.cmd == "token":
@@ -44,7 +46,7 @@ def main(argv=None):
         mgr = Manager(cfg)
         srv = make_server(cfg, mgr)
         print(f"Pawload {__version__} listening on 127.0.0.1:{cfg['port']}\nSaving to {mgr.dest}\n"
-              f"Pair the extension with:  pawload token")
+              f"Extension pairing  ->  port: {cfg['port']}   token: {cfg['token']}")
         try:
             srv.serve_forever()
         except KeyboardInterrupt:
