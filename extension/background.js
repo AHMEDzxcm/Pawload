@@ -4,22 +4,46 @@ async function cfg() {
   return { port, token, intercept };
 }
 
-async function api(path, method = "GET", body) {
-  const { port, token } = await cfg();
-  if (!token) throw new Error("Not paired yet: run `palwoad token` and paste the token in Palwoad options.");
-  let res;
-  try {
-    res = await fetch(`http://127.0.0.1:${port}${path}`, {
-      method,
-      headers: { "X-Palwoad-Token": token, "Content-Type": "application/json" },
-      body: body ? JSON.stringify(body) : undefined,
+// Automatic pairing: the installed helper (native messaging) hands us the port + token and
+// starts the Palwoad service if it isn't running. Nothing for the user to copy or paste.
+async function pair() {
+  const r = await new Promise((resolve) => {
+    chrome.runtime.sendNativeMessage("com.palwoad.host", { type: "hello" }, (resp) => {
+      resolve(chrome.runtime.lastError ? null : resp);
     });
-  } catch {
-    throw new Error("Can't reach Palwoad. Is `palwoad serve` running?");
-  }
+  });
+  if (!r || !r.ok) return null;
+  await chrome.storage.local.set({ port: r.port, token: r.token });
+  return { port: r.port, token: r.token };
+}
+
+async function request(c, path, method, body) {
+  const res = await fetch(`http://127.0.0.1:${c.port}${path}`, {
+    method,
+    headers: { "X-Palwoad-Token": c.token, "Content-Type": "application/json" },
+    body: body ? JSON.stringify(body) : undefined,
+  });
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+  if (!res.ok) throw Object.assign(new Error(data.error || `HTTP ${res.status}`), { status: res.status });
   return data;
+}
+
+async function api(path, method = "GET", body) {
+  let c = await cfg();
+  if (c.token) {
+    try {
+      return await request(c, path, method, body);
+    } catch (e) {
+      if (e.status && e.status !== 401) throw e; // real server error: report it
+      // can't reach the service, or the token changed: re-pair below
+    }
+  }
+  c = await pair();
+  if (!c) {
+    if ((await cfg()).token) throw new Error("Can't reach Palwoad. Start it from the Start menu.");
+    throw new Error("Palwoad isn't installed on this computer. Run the Palwoad Setup first.");
+  }
+  return request(c, path, method, body);
 }
 
 chrome.runtime.onMessage.addListener((msg, sender, reply) => {

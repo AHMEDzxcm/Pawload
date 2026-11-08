@@ -1,8 +1,11 @@
-name: Build Windows package
+name: Build Windows installer
 on:
   push:
     branches: [main, "ccr-*"]
+    tags: ["v*"]
   workflow_dispatch:
+permissions:
+  contents: write
 jobs:
   build:
     runs-on: windows-latest
@@ -12,18 +15,43 @@ jobs:
         with: { python-version: "3.12" }
       - run: pip install . pyinstaller pytest
       - run: python -m pytest -q tests
-      - run: pyinstaller --onefile --name Palwoad --paths src --collect-all yt_dlp packaging/launcher.py
+      - name: Build Palwoad.exe (tray app) and palwoad-host.exe (browser pairing helper)
+        run: |
+          pyinstaller --onefile --windowed --name Palwoad --paths src --collect-all yt_dlp --collect-all pystray packaging/launcher.py
+          pyinstaller --onefile --name palwoad-host --paths src packaging/host.py
       - name: Fetch ffmpeg
         shell: pwsh
         run: |
           Invoke-WebRequest https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip -OutFile ff.zip
           Expand-Archive ff.zip ff
           Copy-Item (Get-ChildItem ff -Recurse -Filter ffmpeg.exe | Select-Object -First 1).FullName dist/ffmpeg.exe
-      - name: Assemble package
+      - name: Build installer
         shell: pwsh
         run: |
-          New-Item -ItemType Directory Palwoad-Windows
-          Copy-Item dist/Palwoad.exe, dist/ffmpeg.exe, README.md, LICENSE Palwoad-Windows/
-          Copy-Item extension Palwoad-Windows/extension -Recurse
+          choco install innosetup -y --no-progress
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" packaging\palwoad.iss
+      - name: Smoke test the installed layout
+        shell: pwsh
+        run: |
+          Start-Process installer\PalwoadSetup.exe -ArgumentList "/VERYSILENT","/SUPPRESSMSGBOXES","/NORESTART","/DIR=$PWD\smoke" -Wait
+          if (-not (Test-Path smoke\Palwoad.exe)) { throw "install failed" }
+          $reg = (Get-ItemProperty "HKCU:\Software\Google\Chrome\NativeMessagingHosts\com.palwoad.host").'(default)'
+          Get-Content $reg
+          # pairing helper speaks the native-messaging protocol
+          $msg = [Text.Encoding]::UTF8.GetBytes('{"type":"hello"}')
+          $len = [BitConverter]::GetBytes([uint32]$msg.Length)
+          [IO.File]::WriteAllBytes("hello.bin", $len + $msg)
+          cmd /c "smoke\palwoad-host.exe < hello.bin > out.bin"
+          $out = [Text.Encoding]::UTF8.GetString([IO.File]::ReadAllBytes("out.bin"))
+          Write-Host ($out -replace '"token": "[^"]*"','"token": "***"')
+          if ($out -notmatch '"ok": true') { throw "pairing helper failed" }
+          $r = Invoke-RestMethod http://127.0.0.1:9614/api/ping
+          if ($r.app -ne "palwoad") { throw "service not running" }
       - uses: actions/upload-artifact@v4
-        with: { name: Palwoad-Windows, path: Palwoad-Windows }
+        with: { name: PalwoadSetup, path: installer/PalwoadSetup.exe }
+      - name: Publish release (tags only)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: installer/PalwoadSetup.exe
+          generate_release_notes: true

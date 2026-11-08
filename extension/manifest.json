@@ -1,9 +1,10 @@
 {
   "manifest_version": 3,
   "name": "Palwoad",
-  "version": "0.1.0",
+  "version": "0.2.0",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3WsFYbwa02ZoFinU+LcPgUHSzrOsr3sWsyBr9pf9d7FZTbwmnOw+rvnnWei5MLSHbSISFabJ2Y8ZrM+3YigPqzdT/yjISXGArVimmo9bWv+OE9Kk/kDCh7ov0Rp32JsNv7mrHs1zRo6un8J6Qa9Hf0RD4VGwczHlVUyas6PmiF0nI8EKaITdjL7nqBPylzsTvP3ndqaRcDW8vwLeUF5BzDDl0+LUYUgtjTB8EOZgaKrqSju+4/X0cdBACb+wfsYtXW62QdDRf7J52YJf7cr6dbZFcIPR8DZAaOue9EgbGosiXv/bgRVG+LnA0inx7sc4iDAXCjwttFHxAeihj/6CJwIDAQAB",
   "description": "Download videos, audio and files with your local Palwoad service.",
-  "permissions": ["storage", "contextMenus", "downloads"],
+  "permissions": ["storage", "contextMenus", "downloads", "nativeMessaging"],
   "host_permissions": ["http://127.0.0.1/*", "http://localhost/*"],
   "background": { "service_worker": "background.js" },
   "content_scripts": [

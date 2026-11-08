@@ -32,8 +32,8 @@ def main(argv=None):
     s.add_argument("key", choices=["download_dir", "port", "connections", "max_concurrent"])
     s.add_argument("value")
     a = p.parse_args(argv)
-    if a.cmd is None:  # double-clicked the .exe: just run the service
-        a.cmd = "serve"
+    if a.cmd is None:  # double-clicked the .exe: tray app
+        a.cmd = "app"
 
     cfg = config.load()
     if a.cmd == "token":
@@ -42,7 +42,16 @@ def main(argv=None):
         cfg[a.key] = a.value if a.key == "download_dir" else int(a.value)
         config.save(cfg)
         print(f"{a.key} = {cfg[a.key]}")
-    elif a.cmd == "serve":
+    elif a.cmd == "app":
+        try:
+            from . import tray
+        except ImportError:  # no tray libraries: run as a plain service
+            tray = None
+        if tray:
+            tray.run(cfg)
+            return
+        a.cmd = "serve"
+    if a.cmd == "serve":
         mgr = Manager(cfg)
         srv = make_server(cfg, mgr)
         print(f"Palwoad {__version__} listening on 127.0.0.1:{cfg['port']}\nSaving to {mgr.dest}\n"

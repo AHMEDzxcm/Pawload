@@ -9,7 +9,7 @@ description = "Open-source download manager: fast segmented downloads, video/aud
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.9"
-dependencies = ["yt-dlp"]
+dependencies = ["yt-dlp", "pystray", "Pillow"]
 
 [project.optional-dependencies]
 dev = ["pytest"]
